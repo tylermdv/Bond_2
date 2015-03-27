@@ -17,8 +17,6 @@ decode_results results;
 //double x2, y2, z2;
 
 
-
-
 void setup() {
   // initialize all pins
   
@@ -47,13 +45,20 @@ void loop() {
   
   digitalWrite(LED_Pin_yel, HIGH); // turn on yellow light if connected
   
+        if (Button_State == LOW)  {
+        Serial.println("Code sent!");
+        
+          for (int i = 1; i < 4; i++) {
+          Serial.println("Code sent!");  
+          Send_Code();
+          delay(500);
+          }
+        
+        }
     
     
-    if (Button_State == LOW)  {
-      Serial.println("Code sent!");
-      Send_Code();
-     }
-  }
+
+    }
   
   // If unique code is recieved (12D52043) -> light up red LED
   if (irrecv.decode(&results))  {
@@ -66,7 +71,7 @@ void loop() {
     Serial.println(results.value, HEX);
     
   //Bluetooth stuff...
-  byte readVal = 0x00;
+ byte readVal = 0x00;
   
   //something in the buffer
   if(ble_available()){
@@ -76,7 +81,7 @@ void loop() {
   
   if(readVal == 0x01){
     //write a byte back to the master
-    ble_write(results.value);
+    ble_write_bytes((unsigned char*)(&(results.value)),sizeof(results.value));
   }
 
 
@@ -84,6 +89,7 @@ void loop() {
     readVal = 0x00;
     //visual indication that it is not connected
     digitalWrite(LED_Pin_yel, LOW);
+    
   }
   
     irrecv.resume(); // recieve the next value
